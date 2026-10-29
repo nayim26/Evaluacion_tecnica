@@ -17,7 +17,7 @@ Incluye:
 
 | Parte | Tecnología |
 |---|---|
-| Pantalla | Angular 22, componentes standalone, formularios reactivos, SweetAlert2 |
+| Vista | Angular 22, componentes standalone, formularios reactivos, SweetAlert2 |
 | API | ASP.NET Core 8 (`net8.0`), Dapper, JWT HMAC-SHA256 |
 | Base | SQL Server Express (`localhost\SQLEXPRESS`), base `UsuariosDb` |
 | Contraseñas | BCrypt, factor de trabajo 11 |
