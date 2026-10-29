@@ -1,6 +1,6 @@
 # Gestor de usuarios
 
-Login y mantenimiento de usuarios. La documentación completa está en [DOCUMENTACION.md](DOCUMENTACION.md).
+Documentación completa [DOCUMENTACION.md](DOCUMENTACION.md).
 
 | Parte | Cómo abrirla |
 |---|---|
