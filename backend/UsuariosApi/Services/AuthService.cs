@@ -12,7 +12,6 @@ public interface IAuthService
 
 public sealed class AuthService : IAuthService
 {
-    // Evita filtrar si el usuario existe midiendo tiempos de respuesta.
     private const string DummyHash = "$2b$11$t.yQEcD0njME56zriYN56eYXSrGEe4p6CaLSwXtBEjG.DkJoJp6tm";
 
     private readonly IUsuarioRepository _repository;
