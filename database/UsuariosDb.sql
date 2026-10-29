@@ -1,18 +1,3 @@
-/*
-  Script único para SQL Server Management Studio (SSMS).
-
-  1. Conéctese a su instancia (localhost / .\SQLEXPRESS).
-  2. Abra este archivo y pulse Ejecutar (F5).
-
-  Crea la base UsuariosDb, la tabla Usuarios y el usuario demo:
-    usuario: admin
-    contraseña: Admin123!
-
-  Nota: el valor de Password es el hash BCrypt de Admin123!.
-  En la aplicación Angular usted escribe la contraseña en texto normal;
-  la API la hashea sola. Nunca pegue el hash al crear usuarios desde la UI.
-*/
-
 IF DB_ID(N'UsuariosDb') IS NULL
 BEGIN
     CREATE DATABASE UsuariosDb;
