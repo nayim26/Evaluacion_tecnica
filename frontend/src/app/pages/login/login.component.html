@@ -1,21 +1,19 @@
-<div class="login">
+<main class="login">
   <section class="login-story">
-    <p class="eyebrow">Padrón de usuarios</p>
-    <h1>Entre para mantener las cuentas.</h1>
-    <p>
-      La sesión protege el alta, la edición y la baja. Las contraseñas se guardan cifradas y no vuelven a mostrarse.
-    </p>
+    <p class="eyebrow">Padrón</p>
+    <h1>Gestión de usuarios</h1>
+    <p>Acceso seguro al alta, edición y baja de cuentas. Las contraseñas se guardan cifradas.</p>
     <ul>
-      <li>Acceso con usuario y contraseña</li>
-      <li>Listado, alta, edición y eliminación</li>
-      <li>Rutas internas bloqueadas sin sesión</li>
+      <li>Login con usuario y contraseña</li>
+      <li>CRUD completo de usuarios</li>
+      <li>Rutas protegidas por sesión</li>
     </ul>
   </section>
 
   <section class="login-panel">
     <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <h2>Iniciar sesión</h2>
-      <p class="lede">Use la cuenta de demostración o una cuenta activa del padrón.</p>
+      <p class="lede">Ingrese con una cuenta activa.</p>
 
       @if (error()) {
         <p class="banner error" role="alert">{{ error() }}</p>
@@ -54,9 +52,7 @@
         {{ submitting() ? 'Ingresando…' : 'Entrar' }}
       </button>
 
-      <p class="demo">
-        Demostración: <strong>admin</strong> / <strong>Admin123!</strong>
-      </p>
+      <p class="demo">Demo: <strong>admin</strong> / <strong>Admin123!</strong></p>
     </form>
   </section>
-</div>
+</main>

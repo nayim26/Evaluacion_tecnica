@@ -25,15 +25,21 @@
   }
 
   @if (loading()) {
-    <p class="status">Cargando usuarios…</p>
+    <div class="table-wrap" aria-busy="true">
+      <div style="padding: 1.2rem; display: grid; gap: 0.8rem">
+        <div class="skeleton" style="width: 40%"></div>
+        <div class="skeleton" style="width: 85%"></div>
+        <div class="skeleton" style="width: 70%"></div>
+      </div>
+    </div>
   } @else if (!error() && users().length === 0) {
     <div class="empty">
-      <h2>No hay usuarios</h2>
-      <p>Cree la primera cuenta para empezar el padrón.</p>
+      <h2>Sin usuarios</h2>
+      <p>Cree la primera cuenta para empezar.</p>
       <a class="button" routerLink="/usuarios/nuevo">Crear usuario</a>
     </div>
   } @else if (!error()) {
-    <p class="scroll-hint">Deslice la tabla para ver todas las columnas.</p>
+    <p class="scroll-hint">Deslice la tabla para ver más columnas.</p>
     <div class="table-wrap">
       <table>
         <thead>

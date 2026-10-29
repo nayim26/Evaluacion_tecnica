@@ -1,4 +1,3 @@
-using System.Globalization;
 using UsuariosApi.Data;
 using UsuariosApi.Dtos;
 using UsuariosApi.Exceptions;
@@ -58,8 +57,8 @@ public sealed class UsuarioService : IUsuarioService
             Username = username,
             Email = email,
             Password = PasswordHasher.Hash(request.Password),
-            Estado = request.Estado ? 1 : 0,
-            FechaCreacion = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+            Estado = request.Estado,
+            FechaCreacion = DateTime.UtcNow
         });
 
         return GetById(id);
@@ -96,7 +95,7 @@ public sealed class UsuarioService : IUsuarioService
         existing.Username = username;
         existing.Email = email;
         existing.Password = password;
-        existing.Estado = request.Estado ? 1 : 0;
+        existing.Estado = request.Estado;
 
         if (!_repository.Update(existing))
         {

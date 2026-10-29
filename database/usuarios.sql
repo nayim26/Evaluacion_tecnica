@@ -1,10 +1,5 @@
--- Padrón de usuarios (SQLite).
--- La API aplica este script al iniciar. También puede ejecutarse a mano:
---   sqlite3 backend/UsuariosApi/data/usuarios.db < database/usuarios.sql
---
--- Estado: 1 = activo, 0 = inactivo.
--- Password: hash BCrypt. Nunca se guarda la contraseña en texto plano.
--- Usuario inicial: admin / Admin123!
+-- SQLite (desarrollo local). La API lo aplica al arrancar.
+-- Usuario demo: admin / Admin123!
 
 CREATE TABLE IF NOT EXISTS Usuarios (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,7 +16,7 @@ SELECT
     'admin@demo.local',
     '$2b$11$t.yQEcD0njME56zriYN56eYXSrGEe4p6CaLSwXtBEjG.DkJoJp6tm',
     1,
-    strftime('%Y-%m-%d %H:%M:%S', 'now')
+    strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
 WHERE NOT EXISTS (
     SELECT 1 FROM Usuarios WHERE lower(Username) = 'admin'
 );

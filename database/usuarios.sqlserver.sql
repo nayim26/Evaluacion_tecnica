@@ -1,11 +1,6 @@
--- Padrón de usuarios (SQL Server).
--- Ejecutar en SSMS o sqlcmd contra la base que vaya a usar la API.
--- Estado: 1 = activo, 0 = inactivo.
--- Password: hash BCrypt. Usuario inicial: admin / Admin123!
---
--- La aplicación de esta entrega corre con SQLite y el script database/usuarios.sql
--- para poder iniciarla sin instalar SQL Server. Este archivo deja el mismo
--- modelo listo para SQL Server.
+-- SQL Server (Windows / Visual Studio).
+-- Crear la base UsuariosDb y ejecutar este script, o dejar que la API lo aplique al iniciar.
+-- Usuario demo: admin / Admin123!
 
 IF OBJECT_ID(N'dbo.Usuarios', N'U') IS NULL
 BEGIN

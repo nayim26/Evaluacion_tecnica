@@ -4,16 +4,21 @@ backend/**/obj/
 backend/**/data/
 *.user
 *.suo
-
-# SQLite
 *.db
 *.db-shm
 *.db-wal
+
+# Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
 
 # OS / editor
 .DS_Store
 Thumbs.db
 *.log
+.env
+.env.*
 
 # Guía personal de exposición
 Guia-exposicion*.pdf

@@ -12,7 +12,7 @@ public interface IAuthService
 
 public sealed class AuthService : IAuthService
 {
-    // Hash fijo para igualar el tiempo de respuesta cuando el usuario no existe.
+    // Evita filtrar si el usuario existe midiendo tiempos de respuesta.
     private const string DummyHash = "$2b$11$t.yQEcD0njME56zriYN56eYXSrGEe4p6CaLSwXtBEjG.DkJoJp6tm";
 
     private readonly IUsuarioRepository _repository;
@@ -43,7 +43,7 @@ public sealed class AuthService : IAuthService
             throw new UnauthorizedException("Usuario o contraseña incorrectos.");
         }
 
-        if (usuario.Estado != 1)
+        if (!usuario.Estado)
         {
             _logger.LogWarning("Inicio de sesión de una cuenta inactiva: {Username}", username);
             throw new ForbiddenException("El usuario está inactivo.");

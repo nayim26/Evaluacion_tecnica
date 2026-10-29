@@ -20,7 +20,15 @@ if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32
 
 var database = DatabaseInitializer.Resolve(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(database);
-builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>();
+if (database.Provider == DatabaseProvider.SqlServer)
+{
+    builder.Services.AddSingleton<IDbConnectionFactory, SqlServerConnectionFactory>();
+}
+else
+{
+    builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>();
+}
+
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -139,9 +147,17 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSwagger();
-app.UseSwaggerUI(options => options.DocumentTitle = "Usuarios API");
-app.MapGet("/", () => Results.Redirect("/swagger"));
-app.MapControllers();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options => options.DocumentTitle = "Usuarios API");
+    app.MapGet("/", () => Results.Redirect("/swagger"));
+}
+else
+{
+    app.MapGet("/", () => Results.Ok(new { name = "UsuariosApi", status = "ok" }));
+}
+
+app.MapControllers();
 app.Run();
