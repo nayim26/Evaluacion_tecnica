@@ -24,7 +24,6 @@ public static class DatabaseInitializer
         var batches = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase)
             .Select(batch => batch.Trim())
             .Where(batch => batch.Length > 0)
-            // La base ya se crea en SSMS; la API solo asegura tabla y admin.
             .Where(batch => !batch.Contains("CREATE DATABASE", StringComparison.OrdinalIgnoreCase))
             .Where(batch => !batch.StartsWith("USE ", StringComparison.OrdinalIgnoreCase));
 
