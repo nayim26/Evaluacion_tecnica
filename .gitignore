@@ -14,3 +14,6 @@ backend/**/data/
 .DS_Store
 Thumbs.db
 *.log
+
+# Guía personal de exposición
+Guia-exposicion*.pdf
