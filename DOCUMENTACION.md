@@ -1,6 +1,6 @@
 # Documentación del sistema de gestión de usuarios
 
-Sistema web para iniciar sesión y mantener un padrón de usuarios: alta, consulta, edición y baja. Tiene tres partes que trabajan juntas: una pantalla en Angular, una API REST en ASP.NET Core y una base SQL Server.
+Sistema web para iniciar sesión y mantener un padrón de usuarios: creación, edición, listado y eliminación. Tiene tres partes que trabajan juntas: una vista en Angular, una API REST en ASP.NET Core y una base SQL Server.
 
 ## Alcance
 
@@ -12,7 +12,6 @@ Incluye:
 - Base `UsuariosDb` y el script para crearla.
 - Integración del frontend con la API.
 
-Queda fuera: despliegue a producción, roles complejos y pruebas automatizadas.
 
 ## Tecnologías
 
@@ -25,11 +24,11 @@ Queda fuera: despliegue a producción, roles complejos y pruebas automatizadas.
 
 Puertos de desarrollo:
 
-- Pantalla: `http://localhost:4317`
+- Vista: `http://localhost:4317`
 - API: `http://localhost:5087`
 - Swagger (solo en Development): `http://localhost:5087/swagger`
 
-## Cómo ejecutarlo
+## Ejecución
 
 Hace falta .NET 8 (runtime de ASP.NET y runtime base), Node.js, y SQL Server Express con la instancia `SQLEXPRESS`.
 
@@ -133,7 +132,7 @@ Si el usuario no existe, la contraseña no coincide o la cuenta está inactiva, 
 
 ### Usuario
 
-Alta:
+Creación:
 
 ```json
 {
@@ -181,7 +180,7 @@ El middleware traduce las excepciones de negocio a JSON `{ "message": "...", "er
 | 409 | Usuario o correo ya registrados. También si SQL devuelve los códigos 2627 o 2601 |
 | 500 | Error no previsto |
 
-## Pantalla
+## Vista
 
 ### Rutas
 
@@ -200,7 +199,7 @@ El login guarda la respuesta en `localStorage` con la clave `padron.session`. El
 
 «Recordarme» guarda solo el nombre de usuario en `padron.rememberUsername`. No guarda la contraseña.
 
-### Pantallas
+### Vistas
 
 - **Login.** Título «Gestor de usuarios», tarjeta con usuario, contraseña y «Recordarme». Si faltan datos o las credenciales no sirven, el texto aparece arriba de los campos y un signo de exclamación queda dentro de cada input afectado.
 - **Listado.** Tabla con id, usuario, correo, estado, fecha y acciones. Eliminar pide confirmación con SweetAlert. No se puede eliminar la cuenta con la que se inició sesión.
