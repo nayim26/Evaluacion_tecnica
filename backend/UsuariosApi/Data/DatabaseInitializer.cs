@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace UsuariosApi.Data;
 
@@ -24,7 +24,7 @@ public static class DatabaseInitializer
         var batches = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase)
             .Select(batch => batch.Trim())
             .Where(batch => batch.Length > 0)
-            // Salto CREATE DATABASE / USE: eso lo corro yo en SSMS. Acá solo tabla y admin.
+            // Omite CREATE DATABASE y USE. Esos lotes corren en SSMS; aquí solo se asegura la tabla y el admin.
             .Where(batch => !batch.Contains("CREATE DATABASE", StringComparison.OrdinalIgnoreCase))
             .Where(batch => !batch.StartsWith("USE ", StringComparison.OrdinalIgnoreCase));
 

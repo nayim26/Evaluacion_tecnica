@@ -11,9 +11,21 @@ import {
 } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { alertError, alertRequirements, alertSuccess } from '../../core/alerts';
 import { readApiError } from '../../core/api-error';
 import { readSession } from '../../core/session';
 import { UserService } from '../../services/user.service';
+
+// Exige local@dominio.tld. Rechaza correos sin punto en el dominio.
+const emailDomainPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
+
+const emailDomain: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const value = String(control.value ?? '').trim();
+  if (!value) {
+    return null;
+  }
+  return emailDomainPattern.test(value) ? null : { domain: true };
+};
 
 const passwordsMatch: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = String(control.get('password')?.value ?? '');
@@ -59,7 +71,7 @@ export class UserFormComponent implements OnInit {
           Validators.pattern(/^[a-zA-Z0-9._-]+$/),
         ],
       ],
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
+      email: ['', [Validators.required, Validators.maxLength(150), emailDomain]],
       password: [''],
       confirmPassword: [''],
       estado: ['activo'],
@@ -86,8 +98,8 @@ export class UserFormComponent implements OnInit {
     if (errors['required']) {
       return 'Este campo es obligatorio.';
     }
-    if (errors['email']) {
-      return 'Ingrese un correo válido.';
+    if (errors['email'] || errors['domain']) {
+      return 'Use un correo con dominio válido, por ejemplo nombre@empresa.com.';
     }
     if (errors['minlength']) {
       const requiredLength = (errors['minlength'] as { requiredLength: number }).requiredLength;
@@ -108,13 +120,16 @@ export class UserFormComponent implements OnInit {
     this.pageError.set('');
     this.form.markAllAsTouched();
     if (this.form.invalid || this.saving()) {
+      if (this.form.invalid) {
+        void alertRequirements(this.validationMessages());
+      }
       return;
     }
 
     const value = this.form.getRawValue();
     const sessionId = readSession()?.id ?? null;
     if (this.userId !== null && this.userId === sessionId && value.estado === 'inactivo') {
-      this.pageError.set('No puede desactivar el usuario con el que inició sesión.');
+      void alertError('No puede desactivar el usuario con el que inició sesión.');
       return;
     }
 
@@ -236,13 +251,47 @@ export class UserFormComponent implements OnInit {
     });
   }
 
-  private finish(notice: string): void {
+  private validationMessages(): string[] {
+    const messages: string[] = [];
+    const username = this.form.controls.username.errors;
+    const email = this.form.controls.email.errors;
+    const password = this.form.controls.password.errors;
+
+    if (username?.['required']) {
+      messages.push('El usuario es obligatorio.');
+    } else if (username?.['minlength'] || username?.['maxlength']) {
+      messages.push('El usuario debe tener entre 3 y 50 caracteres.');
+    } else if (username?.['pattern']) {
+      messages.push('El usuario solo admite letras, números, punto, guion y guion bajo.');
+    }
+
+    if (email?.['required']) {
+      messages.push('El correo es obligatorio.');
+    } else if (email?.['domain'] || email?.['maxlength']) {
+      messages.push('El correo debe incluir un dominio válido, por ejemplo nombre@empresa.com.');
+    }
+
+    if (password?.['required']) {
+      messages.push('La contraseña es obligatoria.');
+    } else if (password?.['minlength'] || password?.['maxlength']) {
+      messages.push('La contraseña debe tener entre 6 y 100 caracteres.');
+    }
+
+    if (this.form.hasError('passwordMismatch')) {
+      messages.push('Las contraseñas no coinciden.');
+    }
+
+    return messages.length > 0 ? messages : ['Revise los datos del formulario.'];
+  }
+
+  private async finish(message: string): Promise<void> {
     this.saving.set(false);
-    void this.router.navigate(['/usuarios'], { state: { notice } });
+    await alertSuccess(message);
+    void this.router.navigate(['/usuarios']);
   }
 
   private fail(error: unknown, fallback: string): void {
     this.saving.set(false);
-    this.pageError.set(readApiError(error, fallback));
+    void alertError(readApiError(error, fallback));
   }
 }

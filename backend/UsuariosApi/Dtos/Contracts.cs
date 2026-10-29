@@ -47,8 +47,8 @@ public sealed class UsuarioCreateRequest
     public string Username { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El correo es obligatorio.")]
-    [EmailAddress(ErrorMessage = "Ingrese un correo válido.")]
     [StringLength(150, ErrorMessage = "El correo no puede superar 150 caracteres.")]
+    [RegularExpression(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$", ErrorMessage = "El correo debe incluir un dominio válido, por ejemplo nombre@empresa.com.")]
     public string Email { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "La contraseña es obligatoria.")]
@@ -66,8 +66,8 @@ public sealed class UsuarioUpdateRequest
     public string Username { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El correo es obligatorio.")]
-    [EmailAddress(ErrorMessage = "Ingrese un correo válido.")]
     [StringLength(150, ErrorMessage = "El correo no puede superar 150 caracteres.")]
+    [RegularExpression(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$", ErrorMessage = "El correo debe incluir un dominio válido, por ejemplo nombre@empresa.com.")]
     public string Email { get; set; } = string.Empty;
 
     [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener entre 6 y 100 caracteres.")]

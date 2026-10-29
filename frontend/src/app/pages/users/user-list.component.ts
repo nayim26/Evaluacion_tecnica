@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { alertError, alertSuccess, confirmRemoval } from '../../core/alerts';
 import { readApiError } from '../../core/api-error';
 import { Usuario } from '../../core/models';
 import { readSession } from '../../core/session';
@@ -19,24 +20,11 @@ export class UserListComponent implements OnInit {
   protected readonly users = signal<Usuario[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
-  protected readonly notice = signal('');
-  protected readonly pending = signal<Usuario | null>(null);
-  protected readonly confirming = signal(false);
-  protected readonly deleteError = signal('');
   protected readonly currentUserId = readSession()?.id ?? null;
 
   ngOnInit(): void {
     this.title.setTitle('Usuarios · Padrón');
-    const state = history.state as { notice?: unknown } | null;
-    this.notice.set(typeof state?.notice === 'string' ? state.notice : '');
     this.load();
-  }
-
-  @HostListener('document:keydown.escape')
-  protected closeOnEscape(): void {
-    if (!this.confirming()) {
-      this.pending.set(null);
-    }
   }
 
   protected load(): void {
@@ -58,28 +46,22 @@ export class UserListComponent implements OnInit {
     if (user.id === this.currentUserId) {
       return;
     }
-    this.deleteError.set('');
-    this.pending.set(user);
+    void this.remove(user);
   }
 
-  protected confirmDelete(): void {
-    const target = this.pending();
-    if (!target || this.confirming()) {
+  private async remove(user: Usuario): Promise<void> {
+    const result = await confirmRemoval(user.username);
+    if (!result.isConfirmed) {
       return;
     }
 
-    this.confirming.set(true);
-    this.deleteError.set('');
-    this.userService.remove(target.id).subscribe({
+    this.userService.remove(user.id).subscribe({
       next: () => {
-        this.users.update((users) => users.filter((user) => user.id !== target.id));
-        this.notice.set('Usuario eliminado.');
-        this.pending.set(null);
-        this.confirming.set(false);
+        this.users.update((users) => users.filter((item) => item.id !== user.id));
+        void alertSuccess('Usuario eliminado.');
       },
       error: (error: unknown) => {
-        this.confirming.set(false);
-        this.deleteError.set(readApiError(error, 'No se pudo eliminar el usuario.'));
+        void alertError(readApiError(error, 'No se pudo eliminar el usuario.'));
       },
     });
   }

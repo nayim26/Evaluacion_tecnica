@@ -1,8 +1,8 @@
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using UsuariosApi.Models;
 
 namespace UsuariosApi.Security;

@@ -1,5 +1,5 @@
--- Lo corro en SSMS (F5). Crea la base, la tabla y el admin de demo.
--- admin / Admin123!  →  el Password de abajo es el hash BCrypt; en la app escribo la clave normal.
+-- Crea UsuariosDb, la tabla Usuarios y el usuario admin si todavía no existen.
+-- Password guarda el hash BCrypt de Admin123!.
 
 IF DB_ID(N'UsuariosDb') IS NULL
 BEGIN

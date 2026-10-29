@@ -2,7 +2,6 @@
   <a class="back" routerLink="/usuarios">Volver al listado</a>
   <header class="page-head">
     <div>
-      <p class="eyebrow">Mantenimiento</p>
       <h1>{{ mode() === 'create' ? 'Nuevo usuario' : 'Editar usuario' }}</h1>
     </div>
   </header>
@@ -28,6 +27,7 @@
             id="username"
             type="text"
             formControlName="username"
+            placeholder="ana.rios"
             autocomplete="username"
             spellcheck="false"
             [class.invalid]="showError('username')"
@@ -42,6 +42,7 @@
             id="email"
             type="email"
             formControlName="email"
+            placeholder="nombre@empresa.com"
             autocomplete="email"
             [class.invalid]="showError('email')"
           />
@@ -58,16 +59,10 @@
             id="password"
             type="password"
             formControlName="password"
+            [placeholder]="mode() === 'create' ? 'Entre 6 y 100 caracteres' : 'Opcional, entre 6 y 100 caracteres'"
             autocomplete="new-password"
             [class.invalid]="showError('password')"
           />
-          <p class="hint">
-            {{
-              mode() === 'create'
-                ? 'Escriba una contraseña normal (mín. 6). El sistema la cifra al guardar.'
-                : 'Déjela en blanco para no cambiarla. Si la cambia, escriba texto normal.'
-            }}
-          </p>
           @if (showError('password')) {
             <p class="field-error">{{ errorMessage('password') }}</p>
           }
@@ -78,6 +73,7 @@
             id="confirmPassword"
             type="password"
             formControlName="confirmPassword"
+            placeholder="Repita la contraseña"
             autocomplete="new-password"
             [class.invalid]="showError('confirmPassword') || (submitted() && form.hasError('passwordMismatch'))"
           />

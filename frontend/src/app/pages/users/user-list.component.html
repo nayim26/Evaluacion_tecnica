@@ -1,7 +1,6 @@
 <section class="page">
   <header class="page-head">
     <div>
-      <p class="eyebrow">Mantenimiento</p>
       <h1>Usuarios</h1>
       @if (!loading() && !error()) {
         <p class="meta">{{ users().length }} {{ users().length === 1 ? 'cuenta' : 'cuentas' }}</p>
@@ -9,13 +8,6 @@
     </div>
     <a class="button" routerLink="/usuarios/nuevo">Nuevo usuario</a>
   </header>
-
-  @if (notice()) {
-    <div class="banner success" role="status">
-      <span>{{ notice() }}</span>
-      <button type="button" class="text-button" (click)="notice.set('')">Cerrar</button>
-    </div>
-  }
 
   @if (error()) {
     <div class="banner error" role="alert">
@@ -84,30 +76,3 @@
   }
 </section>
 
-@if (pending(); as target) {
-  <div class="backdrop" (click)="confirming() ? null : pending.set(null)">
-    <div
-      class="dialog"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-title"
-      (click)="$event.stopPropagation()"
-    >
-      <h2 id="delete-title">Eliminar usuario</h2>
-      <p>
-        Se eliminará a <strong>{{ target.username }}</strong> ({{ target.email }}). Esta acción no se puede deshacer.
-      </p>
-      @if (deleteError()) {
-        <p class="banner error" role="alert">{{ deleteError() }}</p>
-      }
-      <div class="dialog-actions">
-        <button type="button" class="button ghost" [disabled]="confirming()" (click)="pending.set(null)">
-          Cancelar
-        </button>
-        <button type="button" class="button danger" [disabled]="confirming()" (click)="confirmDelete()">
-          {{ confirming() ? 'Eliminando…' : 'Eliminar' }}
-        </button>
-      </div>
-    </div>
-  </div>
-}

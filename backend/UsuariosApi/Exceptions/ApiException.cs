@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-
 namespace UsuariosApi.Exceptions;
 
 public class ApiException : Exception

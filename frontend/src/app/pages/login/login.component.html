@@ -1,58 +1,83 @@
 <main class="login">
-  <section class="login-story">
-    <p class="eyebrow">Padrón</p>
-    <h1>Gestión de usuarios</h1>
-    <p>Acceso seguro al alta, edición y baja de cuentas. Las contraseñas se guardan cifradas.</p>
-    <ul>
-      <li>Login con usuario y contraseña</li>
-      <li>CRUD completo de usuarios</li>
-      <li>Rutas protegidas por sesión</li>
-    </ul>
+  <section class="login-brand">
+    <h1 class="login-title">Gestor de usuarios</h1>
   </section>
+  <section class="login-side">
+    <svg class="login-wave login-wave-v" viewBox="0 0 1000 800" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M150 0C70 130 210 210 88 390C-8 550 200 640 96 800H1000V0Z" />
+    </svg>
+    <svg class="login-wave login-wave-h" viewBox="0 0 800 90" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 90V42C92 8 168 74 286 40C420 2 508 78 640 36C712 16 764 28 800 22V90Z" />
+    </svg>
+    <form class="signin" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="signin-avatar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="34" height="34">
+          <circle cx="12" cy="8" r="3.1" fill="none" stroke="#fff" stroke-width="1.7" />
+          <path
+            d="M5.6 19.2c1.15-3.15 3.35-4.6 6.4-4.6s5.25 1.45 6.4 4.6"
+            fill="none"
+            stroke="#fff"
+            stroke-width="1.7"
+            stroke-linecap="round"
+          />
+        </svg>
+      </div>
 
-  <section class="login-panel">
-    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <h2>Iniciar sesión</h2>
-      <p class="lede">Ingrese con una cuenta activa.</p>
+      <h1>Iniciar sesión</h1>
 
-      @if (error()) {
-        <p class="banner error" role="alert">{{ error() }}</p>
+      @if (banner(); as message) {
+        <p class="signin-note" role="alert">{{ message }}</p>
       }
 
-      <label>
-        Usuario
+      <label class="signin-field" [class.has-alert]="showAlert('username')">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3" />
+          <path d="M6 19c1.1-2.8 3.1-4.1 6-4.1S16.9 16.2 18 19" />
+        </svg>
         <input
           id="username"
           type="text"
           formControlName="username"
+          placeholder="Usuario"
           autocomplete="username"
           spellcheck="false"
-          [class.invalid]="showError('username')"
+          [class.invalid]="showAlert('username')"
+          [attr.aria-invalid]="showAlert('username')"
+          [attr.title]="showAlert('username') ? alertText('username') : null"
         />
+        @if (showAlert('username')) {
+          <span class="signin-alert" aria-hidden="true" [attr.title]="alertText('username')">!</span>
+        }
       </label>
-      @if (showError('username')) {
-        <p class="field-error">El usuario es obligatorio.</p>
-      }
 
-      <label>
-        Contraseña
+      <label class="signin-field" [class.has-alert]="showAlert('password')">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="6" y="10.5" width="12" height="8.5" rx="1.4" />
+          <path d="M9 10.5V8.2a3 3 0 0 1 6 0v2.3" />
+        </svg>
         <input
           id="password"
           type="password"
           formControlName="password"
+          placeholder="Contraseña"
           autocomplete="current-password"
-          [class.invalid]="showError('password')"
+          [class.invalid]="showAlert('password')"
+          [attr.aria-invalid]="showAlert('password')"
+          [attr.title]="showAlert('password') ? alertText('password') : null"
         />
+        @if (showAlert('password')) {
+          <span class="signin-alert" aria-hidden="true" [attr.title]="alertText('password')">!</span>
+        }
       </label>
-      @if (showError('password')) {
-        <p class="field-error">La contraseña es obligatoria.</p>
-      }
 
-      <button class="button" type="submit" [disabled]="submitting()">
+      <button class="signin-submit" type="submit" [disabled]="submitting()">
         {{ submitting() ? 'Ingresando…' : 'Entrar' }}
       </button>
 
-      <p class="demo">Demo: <strong>admin</strong> / <strong>Admin123!</strong></p>
+      <label class="signin-remember">
+        <input type="checkbox" formControlName="remember" />
+        Recordarme
+      </label>
     </form>
   </section>
 </main>
