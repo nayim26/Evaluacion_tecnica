@@ -24,6 +24,7 @@ public static class DatabaseInitializer
         var batches = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase)
             .Select(batch => batch.Trim())
             .Where(batch => batch.Length > 0)
+            // Salto CREATE DATABASE / USE: eso lo corro yo en SSMS. Acá solo tabla y admin.
             .Where(batch => !batch.Contains("CREATE DATABASE", StringComparison.OrdinalIgnoreCase))
             .Where(batch => !batch.StartsWith("USE ", StringComparison.OrdinalIgnoreCase));
 

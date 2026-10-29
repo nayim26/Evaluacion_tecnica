@@ -1,7 +1,7 @@
 @host = http://127.0.0.1:5087
-@token = pegar-el-token-del-login
 
 ### Login
+# @name login
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
@@ -9,6 +9,9 @@ Content-Type: application/json
   "username": "admin",
   "password": "Admin123!"
 }
+
+###
+@token = {{login.response.body.token}}
 
 ### Listar usuarios
 GET {{host}}/api/users

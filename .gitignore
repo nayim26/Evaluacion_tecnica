@@ -20,5 +20,7 @@ Thumbs.db
 .env
 .env.*
 
-# Guía personal de exposición
+# Guía personal de exposición (no va al repo)
 Guia-exposicion*.pdf
+guia_exposicion*.pdf
+**/Guia-exposicion*.pdf

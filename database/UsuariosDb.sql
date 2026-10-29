@@ -1,3 +1,6 @@
+-- Lo corro en SSMS (F5). Crea la base, la tabla y el admin de demo.
+-- admin / Admin123!  →  el Password de abajo es el hash BCrypt; en la app escribo la clave normal.
+
 IF DB_ID(N'UsuariosDb') IS NULL
 BEGIN
     CREATE DATABASE UsuariosDb;
