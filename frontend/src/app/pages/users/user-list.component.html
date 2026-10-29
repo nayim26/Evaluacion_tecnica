@@ -1,0 +1,107 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Mantenimiento</p>
+      <h1>Usuarios</h1>
+      @if (!loading() && !error()) {
+        <p class="meta">{{ users().length }} {{ users().length === 1 ? 'cuenta' : 'cuentas' }}</p>
+      }
+    </div>
+    <a class="button" routerLink="/usuarios/nuevo">Nuevo usuario</a>
+  </header>
+
+  @if (notice()) {
+    <div class="banner success" role="status">
+      <span>{{ notice() }}</span>
+      <button type="button" class="text-button" (click)="notice.set('')">Cerrar</button>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="banner error" role="alert">
+      <span>{{ error() }}</span>
+      <button type="button" class="text-button" (click)="load()">Reintentar</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="status">Cargando usuarios…</p>
+  } @else if (!error() && users().length === 0) {
+    <div class="empty">
+      <h2>No hay usuarios</h2>
+      <p>Cree la primera cuenta para empezar el padrón.</p>
+      <a class="button" routerLink="/usuarios/nuevo">Crear usuario</a>
+    </div>
+  } @else if (!error()) {
+    <p class="scroll-hint">Deslice la tabla para ver todas las columnas.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Creación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="pill" [class.off]="!user.estado">
+                  {{ user.estado ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>{{ user.fechaCreacion | date: 'd MMM y, HH:mm' }}</td>
+              <td class="actions">
+                <a class="text-link" [routerLink]="['/usuarios', user.id, 'editar']">Editar</a>
+                <button
+                  type="button"
+                  class="text-button danger-text"
+                  [disabled]="user.id === currentUserId"
+                  [attr.title]="user.id === currentUserId ? 'No puede eliminar su propia sesión' : 'Eliminar'"
+                  (click)="askDelete(user)"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (pending(); as target) {
+  <div class="backdrop" (click)="confirming() ? null : pending.set(null)">
+    <div
+      class="dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-title"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="delete-title">Eliminar usuario</h2>
+      <p>
+        Se eliminará a <strong>{{ target.username }}</strong> ({{ target.email }}). Esta acción no se puede deshacer.
+      </p>
+      @if (deleteError()) {
+        <p class="banner error" role="alert">{{ deleteError() }}</p>
+      }
+      <div class="dialog-actions">
+        <button type="button" class="button ghost" [disabled]="confirming()" (click)="pending.set(null)">
+          Cancelar
+        </button>
+        <button type="button" class="button danger" [disabled]="confirming()" (click)="confirmDelete()">
+          {{ confirming() ? 'Eliminando…' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

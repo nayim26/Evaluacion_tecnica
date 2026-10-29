@@ -1,0 +1,46 @@
+@host = http://127.0.0.1:5087
+@token = pegar-el-token-del-login
+
+### Login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### Listar usuarios
+GET {{host}}/api/users
+Authorization: Bearer {{token}}
+
+### Obtener uno
+GET {{host}}/api/users/1
+Authorization: Bearer {{token}}
+
+### Crear
+POST {{host}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "ana",
+  "email": "ana@demo.local",
+  "password": "Ana12345",
+  "estado": true
+}
+
+### Actualizar
+PUT {{host}}/api/users/2
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "ana",
+  "email": "ana.rios@demo.local",
+  "estado": false
+}
+
+### Eliminar
+DELETE {{host}}/api/users/2
+Authorization: Bearer {{token}}

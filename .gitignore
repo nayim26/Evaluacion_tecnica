@@ -1,0 +1,16 @@
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/data/
+*.user
+*.suo
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

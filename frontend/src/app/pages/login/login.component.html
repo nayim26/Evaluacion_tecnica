@@ -1,0 +1,62 @@
+<div class="login">
+  <section class="login-story">
+    <p class="eyebrow">Padrón de usuarios</p>
+    <h1>Entre para mantener las cuentas.</h1>
+    <p>
+      La sesión protege el alta, la edición y la baja. Las contraseñas se guardan cifradas y no vuelven a mostrarse.
+    </p>
+    <ul>
+      <li>Acceso con usuario y contraseña</li>
+      <li>Listado, alta, edición y eliminación</li>
+      <li>Rutas internas bloqueadas sin sesión</li>
+    </ul>
+  </section>
+
+  <section class="login-panel">
+    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <h2>Iniciar sesión</h2>
+      <p class="lede">Use la cuenta de demostración o una cuenta activa del padrón.</p>
+
+      @if (error()) {
+        <p class="banner error" role="alert">{{ error() }}</p>
+      }
+
+      <label>
+        Usuario
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          autocomplete="username"
+          spellcheck="false"
+          [class.invalid]="showError('username')"
+        />
+      </label>
+      @if (showError('username')) {
+        <p class="field-error">El usuario es obligatorio.</p>
+      }
+
+      <label>
+        Contraseña
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          [class.invalid]="showError('password')"
+        />
+      </label>
+      @if (showError('password')) {
+        <p class="field-error">La contraseña es obligatoria.</p>
+      }
+
+      <button class="button" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Ingresando…' : 'Entrar' }}
+      </button>
+
+      <p class="demo">
+        Demostración: <strong>admin</strong> / <strong>Admin123!</strong>
+      </p>
+    </form>
+  </section>
+</div>
