@@ -18,17 +18,9 @@ if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32
     throw new InvalidOperationException("Jwt:Key debe existir y tener al menos 32 bytes.");
 }
 
-var database = DatabaseInitializer.Resolve(builder.Configuration, builder.Environment);
+var database = DatabaseInitializer.Resolve(builder.Configuration);
 builder.Services.AddSingleton(database);
-if (database.Provider == DatabaseProvider.SqlServer)
-{
-    builder.Services.AddSingleton<IDbConnectionFactory, SqlServerConnectionFactory>();
-}
-else
-{
-    builder.Services.AddSingleton<IDbConnectionFactory, SqliteConnectionFactory>();
-}
-
+builder.Services.AddSingleton<IDbConnectionFactory, SqlServerConnectionFactory>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

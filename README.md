@@ -1,57 +1,70 @@
 # Padrón de usuarios
 
-Aplicación full stack: login con contraseña cifrada (BCrypt) y CRUD de usuarios.
+Aplicación full stack para Windows: login + CRUD de usuarios.
 
-| Capa | Stack |
+| Capa | Tecnología |
 |---|---|
-| Backend | C# / .NET 8 (ASP.NET Core, JWT, Dapper) |
-| Frontend | Angular 22 (formularios reactivos, guards) |
-| Base de datos | **SQL Server** en Windows · SQLite en desarrollo local |
+| Backend | C# / .NET 8 — abrir `backend/Usuarios.sln` en Visual Studio |
+| Frontend | Angular 22 — VS Code |
+| Base de datos | SQL Server — un solo script en SSMS |
 
 Demo: `admin` / `Admin123!`
 
 ---
 
-## Windows (Visual Studio + SQL Server + VS Code)
+## ¿Qué es `Usuarios.sln`?
 
-### 1. Requisitos
+Es el **archivo de solución de Visual Studio**. Agrupa el proyecto de la API (`UsuariosApi`).
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQL Server](https://www.microsoft.com/sql-server) (Express o superior) + SSMS opcional
-- [Node.js 20+](https://nodejs.org)
-- Visual Studio 2022 (backend) y VS Code (Angular)
+En Windows: doble clic en `backend/Usuarios.sln` → Visual Studio → F5. Eso levanta la API en http://localhost:5087.
 
-### 2. Base de datos
+No es la base de datos. La base se crea con el script SQL (abajo).
 
-1. Cree la base `UsuariosDb` en SQL Server.
-2. Abra `backend/UsuariosApi/appsettings.Development.json` (o use el perfil Production) y configure:
+---
+
+## Contraseñas (importante)
+
+En la pantalla **Nuevo usuario** escriba una contraseña normal, por ejemplo `Clave123`.
+
+La API la **hashea sola** con BCrypt antes de guardarla.
+
+El texto raro `$2b$11$...` que aparece en el script SQL es solo el hash ya preparado del usuario demo `admin` / `Admin123!`. **No lo copie al crear usuarios** desde la aplicación.
+
+---
+
+## Arranque en Windows
+
+### 1. Base de datos (SSMS)
+
+1. Abra SQL Server Management Studio.
+2. Conéctese a su instancia (`localhost` o `.\SQLEXPRESS`).
+3. Abra `database/UsuariosDb.sql` y pulse **Ejecutar (F5)**.
+
+Ese archivo único crea:
+
+- la base `UsuariosDb`
+- la tabla `Usuarios`
+- el usuario `admin` (contraseña `Admin123!`)
+
+### 2. API (Visual Studio)
+
+1. Abra `backend/Usuarios.sln`.
+2. Revise la cadena en `UsuariosApi/appsettings.Development.json` si su servidor no es `localhost`:
 
 ```json
 "Database": {
-  "Provider": "SqlServer",
   "ConnectionString": "Server=localhost;Database=UsuariosDb;Trusted_Connection=True;TrustServerCertificate=True;"
 }
 ```
 
-Si usa autenticación SQL:
+SQL Express suele ser `Server=.\\SQLEXPRESS;...`.  
+Autenticación SQL: `User Id=sa;Password=SU_CLAVE;TrustServerCertificate=True;`.
 
-```text
-Server=localhost;Database=UsuariosDb;User Id=sa;Password=SU_CLAVE;TrustServerCertificate=True;
-```
+3. F5. Swagger: http://localhost:5087/swagger
 
-Al arrancar, la API aplica `database/usuarios.sqlserver.sql` (crea tabla + usuario admin si no existe). También puede ejecutarlo a mano en SSMS.
+Al iniciar, la API vuelve a comprobar tabla y admin (por si la base ya existía vacía). La creación de la base la hace el script de SSMS.
 
-### 3. API (Visual Studio)
-
-1. Abra `backend/Usuarios.sln`.
-2. Perfil de arranque: `http` → `http://localhost:5087`.
-3. F5 / ejecutar.
-
-Swagger (solo Development): http://localhost:5087/swagger
-
-Antes de producción, cambie `Jwt:Key` en `appsettings.Production.json`.
-
-### 4. Angular (VS Code)
+### 3. Angular (VS Code)
 
 ```bash
 cd frontend
@@ -59,32 +72,7 @@ npm install
 npm start
 ```
 
-UI: http://localhost:4317  
-El proxy reenvía `/api` a `http://127.0.0.1:5087`.
-
-Build de producción:
-
-```bash
-npm run build
-```
-
-Salida en `frontend/dist/frontend/browser` (archivos estáticos listos para IIS o cualquier servidor web).
-
-Si Angular y la API no comparten origen, edite `src/environments/environment.production.ts` (`apiBaseUrl`).
-
----
-
-## Desarrollo en Linux / sin SQL Server
-
-Por defecto usa SQLite (`Database:Provider = Sqlite`). No hace falta instalar motor SQL.
-
-```bash
-cd backend
-dotnet run --project UsuariosApi --launch-profile http
-
-cd frontend
-npm install && npm start
-```
+UI: http://localhost:4317
 
 ---
 
@@ -93,24 +81,11 @@ npm install && npm start
 | Método | Ruta | Auth |
 |---|---|---|
 | POST | `/api/auth/login` | No |
-| GET | `/api/users` | Bearer |
-| GET | `/api/users/{id}` | Bearer |
-| POST | `/api/users` | Bearer |
-| PUT | `/api/users/{id}` | Bearer |
-| DELETE | `/api/users/{id}` | Bearer |
-
----
-
-## Estructura
-
-```text
-backend/UsuariosApi   API REST
-database              Scripts SQLite y SQL Server
-frontend              Angular
-```
+| GET/POST | `/api/users` | Bearer |
+| GET/PUT/DELETE | `/api/users/{id}` | Bearer |
 
 ## Notas
 
-- Contraseñas: BCrypt. El listado no devuelve el hash.
-- No se puede eliminar ni desactivar la sesión actual.
+- El listado nunca muestra el hash de la contraseña.
+- No puede eliminar ni desactivar la sesión con la que entró.
 - Un usuario inactivo no puede iniciar sesión.

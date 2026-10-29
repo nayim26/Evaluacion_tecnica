@@ -6,12 +6,10 @@ namespace UsuariosApi.Data;
 public sealed class UsuarioRepository : IUsuarioRepository
 {
     private readonly IDbConnectionFactory _factory;
-    private readonly DatabaseOptions _options;
 
-    public UsuarioRepository(IDbConnectionFactory factory, DatabaseOptions options)
+    public UsuarioRepository(IDbConnectionFactory factory)
     {
         _factory = factory;
-        _options = options;
     }
 
     public IReadOnlyList<Usuario> GetAll()
@@ -40,20 +38,13 @@ public sealed class UsuarioRepository : IUsuarioRepository
     public Usuario? GetByUsername(string username)
     {
         using var connection = _factory.Create();
-        var sql = _options.Provider == DatabaseProvider.SqlServer
-            ? """
-              SELECT TOP 1 Id, Username, Email, Password, Estado, FechaCreacion
-              FROM Usuarios
-              WHERE LOWER(Username) = LOWER(@Username)
-              """
-            : """
-              SELECT Id, Username, Email, Password, Estado, FechaCreacion
-              FROM Usuarios
-              WHERE lower(Username) = lower(@Username)
-              LIMIT 1
-              """;
-
-        return connection.QuerySingleOrDefault<Usuario>(sql, new { Username = username });
+        return connection.QuerySingleOrDefault<Usuario>(
+            """
+            SELECT TOP 1 Id, Username, Email, Password, Estado, FechaCreacion
+            FROM Usuarios
+            WHERE LOWER(Username) = LOWER(@Username)
+            """,
+            new { Username = username });
     }
 
     public bool UsernameExists(string username, long? excludeId = null)
@@ -85,32 +76,19 @@ public sealed class UsuarioRepository : IUsuarioRepository
     public long Create(Usuario usuario)
     {
         using var connection = _factory.Create();
-
-        if (_options.Provider == DatabaseProvider.SqlServer)
-        {
-            return connection.ExecuteScalar<long>(
-                """
-                INSERT INTO Usuarios (Username, Email, Password, Estado, FechaCreacion)
-                VALUES (@Username, @Email, @Password, @Estado, @FechaCreacion);
-                SELECT CAST(SCOPE_IDENTITY() AS BIGINT);
-                """,
-                ToParams(usuario));
-        }
-
-        connection.Execute(
+        return connection.ExecuteScalar<long>(
             """
             INSERT INTO Usuarios (Username, Email, Password, Estado, FechaCreacion)
-            VALUES (@Username, @Email, @Password, @Estado, @FechaCreacion)
+            VALUES (@Username, @Email, @Password, @Estado, @FechaCreacion);
+            SELECT CAST(SCOPE_IDENTITY() AS BIGINT);
             """,
             ToParams(usuario));
-
-        return connection.ExecuteScalar<long>("SELECT last_insert_rowid()");
     }
 
     public bool Update(Usuario usuario)
     {
         using var connection = _factory.Create();
-        var rows = connection.Execute(
+        return connection.Execute(
             """
             UPDATE Usuarios
             SET Username = @Username,
@@ -119,8 +97,7 @@ public sealed class UsuarioRepository : IUsuarioRepository
                 Estado = @Estado
             WHERE Id = @Id
             """,
-            ToParams(usuario));
-        return rows > 0;
+            ToParams(usuario)) > 0;
     }
 
     public bool Delete(long id)
@@ -135,7 +112,7 @@ public sealed class UsuarioRepository : IUsuarioRepository
         usuario.Username,
         usuario.Email,
         usuario.Password,
-        Estado = usuario.Estado,
-        FechaCreacion = usuario.FechaCreacion
+        usuario.Estado,
+        usuario.FechaCreacion
     };
 }

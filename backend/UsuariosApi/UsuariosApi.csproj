@@ -12,13 +12,11 @@
     <PackageReference Include="Dapper" Version="2.1.89" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.33" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.33" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\database\usuarios.sql" Link="Sql\usuarios.sql" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\database\usuarios.sqlserver.sql" Link="Sql\usuarios.sqlserver.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\database\UsuariosDb.sql" Link="Sql\UsuariosDb.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

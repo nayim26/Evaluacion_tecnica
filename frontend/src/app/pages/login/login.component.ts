@@ -25,7 +25,7 @@ export class LoginComponent {
   });
 
   constructor() {
-    inject(Title).setTitle('Ingresar · Padrón');
+    inject(Title).setTitle('Ingresar · Sistema de gestión de usuarios');
   }
 
   protected showError(name: 'username' | 'password'): boolean {

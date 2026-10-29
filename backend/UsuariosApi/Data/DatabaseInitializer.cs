@@ -1,88 +1,45 @@
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 
 namespace UsuariosApi.Data;
 
 public static class DatabaseInitializer
 {
-    public static DatabaseOptions Resolve(IConfiguration configuration, IWebHostEnvironment environment)
+    public static DatabaseOptions Resolve(IConfiguration configuration)
     {
-        var providerName = configuration["Database:Provider"] ?? "Sqlite";
-        var provider = providerName.Equals("SqlServer", StringComparison.OrdinalIgnoreCase)
-            ? DatabaseProvider.SqlServer
-            : DatabaseProvider.Sqlite;
-
         var connectionString = configuration["Database:ConnectionString"]
-            ?? (provider == DatabaseProvider.Sqlite
-                ? "Data Source=data/usuarios.db"
-                : throw new InvalidOperationException("Configure Database:ConnectionString para SQL Server."));
-
-        if (provider == DatabaseProvider.Sqlite)
-        {
-            var builder = new SqliteConnectionStringBuilder(connectionString);
-            if (!Path.IsPathRooted(builder.DataSource))
-            {
-                builder.DataSource = Path.GetFullPath(Path.Combine(environment.ContentRootPath, builder.DataSource));
-            }
-
-            var directory = Path.GetDirectoryName(builder.DataSource);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            return new DatabaseOptions
-            {
-                Provider = provider,
-                ConnectionString = builder.ToString(),
-                DatabasePath = builder.DataSource,
-                ScriptPath = FindScript(environment, "usuarios.sql")
-            };
-        }
+            ?? throw new InvalidOperationException(
+                "Configure Database:ConnectionString apuntando a SQL Server (UsuariosDb).");
 
         return new DatabaseOptions
         {
-            Provider = provider,
             ConnectionString = connectionString,
-            ScriptPath = FindScript(environment, "usuarios.sqlserver.sql")
+            ScriptPath = FindScript()
         };
     }
 
     public static void Apply(DatabaseOptions options, ILogger logger)
     {
-        if (options.Provider == DatabaseProvider.Sqlite)
-        {
-            ApplySqlite(options, logger);
-            return;
-        }
-
-        ApplySqlServer(options, logger);
-    }
-
-    private static void ApplySqlite(DatabaseOptions options, ILogger logger)
-    {
-        SQLitePCL.Batteries_V2.Init();
-        var script = File.ReadAllText(options.ScriptPath);
-
-        using var connection = new SqliteConnection(options.ConnectionString);
-        connection.Open();
-        using var command = connection.CreateCommand();
-        command.CommandText = script;
-        command.ExecuteNonQuery();
-
-        logger.LogInformation("SQLite lista en {Path}", options.DatabasePath);
-    }
-
-    private static void ApplySqlServer(DatabaseOptions options, ILogger logger)
-    {
         var script = File.ReadAllText(options.ScriptPath);
         var batches = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase)
             .Select(batch => batch.Trim())
-            .Where(batch => batch.Length > 0);
+            .Where(batch => batch.Length > 0)
+            // La base ya se crea en SSMS; la API solo asegura tabla y admin.
+            .Where(batch => !batch.Contains("CREATE DATABASE", StringComparison.OrdinalIgnoreCase))
+            .Where(batch => !batch.StartsWith("USE ", StringComparison.OrdinalIgnoreCase));
 
         using var connection = new SqlConnection(options.ConnectionString);
-        connection.Open();
+        try
+        {
+            connection.Open();
+        }
+        catch (SqlException ex)
+        {
+            throw new InvalidOperationException(
+                "No se pudo conectar a SQL Server. Ejecute database/UsuariosDb.sql en SSMS " +
+                "y revise Database:ConnectionString en appsettings.",
+                ex);
+        }
 
         foreach (var batch in batches)
         {
@@ -91,16 +48,17 @@ public static class DatabaseInitializer
             command.ExecuteNonQuery();
         }
 
-        logger.LogInformation("SQL Server inicializado con {Script}", options.ScriptPath);
+        logger.LogInformation("SQL Server listo. Script: {Script}", options.ScriptPath);
     }
 
-    private static string FindScript(IWebHostEnvironment environment, string fileName)
+    private static string FindScript()
     {
         var candidates = new[]
         {
-            Path.GetFullPath(Path.Combine(environment.ContentRootPath, "..", "..", "database", fileName)),
-            Path.Combine(AppContext.BaseDirectory, "Sql", fileName),
-            Path.GetFullPath(Path.Combine(environment.ContentRootPath, "Sql", fileName))
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "database", "UsuariosDb.sql")),
+            Path.Combine(AppContext.BaseDirectory, "Sql", "UsuariosDb.sql"),
+            Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "database", "UsuariosDb.sql")),
+            Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "database", "UsuariosDb.sql"))
         };
 
         foreach (var candidate in candidates)
@@ -111,6 +69,7 @@ public static class DatabaseInitializer
             }
         }
 
-        throw new FileNotFoundException($"No se encontró database/{fileName}. Revisado: {string.Join(" | ", candidates)}");
+        throw new FileNotFoundException(
+            "No se encontró database/UsuariosDb.sql. Rutas: " + string.Join(" | ", candidates));
     }
 }

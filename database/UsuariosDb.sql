@@ -1,6 +1,26 @@
--- SQL Server (Windows / Visual Studio).
--- Crear la base UsuariosDb y ejecutar este script, o dejar que la API lo aplique al iniciar.
--- Usuario demo: admin / Admin123!
+/*
+  Script único para SQL Server Management Studio (SSMS).
+
+  1. Conéctese a su instancia (localhost / .\SQLEXPRESS).
+  2. Abra este archivo y pulse Ejecutar (F5).
+
+  Crea la base UsuariosDb, la tabla Usuarios y el usuario demo:
+    usuario: admin
+    contraseña: Admin123!
+
+  Nota: el valor de Password es el hash BCrypt de Admin123!.
+  En la aplicación Angular usted escribe la contraseña en texto normal;
+  la API la hashea sola. Nunca pegue el hash al crear usuarios desde la UI.
+*/
+
+IF DB_ID(N'UsuariosDb') IS NULL
+BEGIN
+    CREATE DATABASE UsuariosDb;
+END
+GO
+
+USE UsuariosDb;
+GO
 
 IF OBJECT_ID(N'dbo.Usuarios', N'U') IS NULL
 BEGIN

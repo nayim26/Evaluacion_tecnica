@@ -1,5 +1,4 @@
 using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using UsuariosApi.Dtos;
 using UsuariosApi.Exceptions;
 
@@ -25,10 +24,6 @@ public sealed class ExceptionHandlingMiddleware
         catch (ApiException exception)
         {
             await Write(context, exception.StatusCode, exception.Message);
-        }
-        catch (SqliteException exception) when (exception.SqliteExtendedErrorCode is 2067 or 1555)
-        {
-            await Write(context, StatusCodes.Status409Conflict, "El nombre de usuario o el correo ya están registrados.");
         }
         catch (SqlException exception) when (exception.Number is 2627 or 2601)
         {

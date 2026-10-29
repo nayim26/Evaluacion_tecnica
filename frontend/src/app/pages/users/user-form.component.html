@@ -62,7 +62,11 @@
             [class.invalid]="showError('password')"
           />
           <p class="hint">
-            {{ mode() === 'create' ? 'Mínimo 6 caracteres.' : 'Déjela en blanco si no desea cambiarla.' }}
+            {{
+              mode() === 'create'
+                ? 'Escriba una contraseña normal (mín. 6). El sistema la cifra al guardar.'
+                : 'Déjela en blanco para no cambiarla. Si la cambia, escriba texto normal.'
+            }}
           </p>
           @if (showError('password')) {
             <p class="field-error">{{ errorMessage('password') }}</p>
